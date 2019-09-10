@@ -1,0 +1,2 @@
+# Char Flow AutoGen Tool For IG-XL V9
+This is a tool to generate CHAR flow according to production flows, which is developed by ADC software team. I made some changes on this tool to compatible with IG-XL V9 for AP team. 
