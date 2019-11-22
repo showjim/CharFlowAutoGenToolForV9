@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ToolConfig_FrmConfirm 
    Caption         =   "Confirm"
-   ClientHeight    =   5748
-   ClientLeft      =   48
-   ClientTop       =   372
-   ClientWidth     =   4788
+   ClientHeight    =   5745
+   ClientLeft      =   45
+   ClientTop       =   375
+   ClientWidth     =   4785
    OleObjectBlob   =   "ToolConfig_FrmConfirm.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -13,6 +13,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
+
 
 
 Option Explicit
@@ -33,9 +35,16 @@ Public FrmResult As String
 Private Sub RunAction()
     ConfigInfor_Initialize
     
+    'Make it faster
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    ActiveSheet.DisplayPageBreaks = False
+    
     FlowAction
     InstancesAction
     JobAction
+    
+    Application.ScreenUpdating = True
     
     MsgBox "Processing is complete!", vbOKOnly, "Information"
     
@@ -102,11 +111,11 @@ Private Function getSheetNameByKey(p_strKey As String, row As Integer, col As In
     l_iSheetCount = 0
     l_iCount = 0
 
-    For i = 1 To ThisWorkbook.Sheets.Count
+    For i = 1 To ActiveWorkbook.Sheets.Count
 '''        ThisWorkbook.Sheets(i).Activate
-        If Len(ThisWorkbook.Sheets(i).Cells(row, col).Text) >= Len(p_strKey) Then
-            If p_strKey = VBA.Mid(VBA.Trim(ThisWorkbook.Sheets(i).Cells(row, col).Text), 1, Len(p_strKey)) Then
-                getSheetNameByKey = ThisWorkbook.Sheets(i).Name
+        If Len(ActiveWorkbook.Sheets(i).Cells(row, col).Text) >= Len(p_strKey) Then
+            If p_strKey = VBA.Mid(VBA.Trim(ActiveWorkbook.Sheets(i).Cells(row, col).Text), 1, Len(p_strKey)) Then
+                getSheetNameByKey = ActiveWorkbook.Sheets(i).Name
                 Exit Function
             End If
         End If
@@ -120,19 +129,19 @@ Private Sub FlowAction()
     Dim l_sheetTagertFlow As Worksheet
     Dim l_iTagertFlowUsedRange As Long
     Dim l_iTagertFlowIndexForAdd As Long
-    Set l_sheetFlow = ThisWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_FlowSourceSheeName)
+    Set l_sheetFlow = ActiveWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_FlowSourceSheeName)
     
     Dim l_iStartNewIndex As Long
 
     'If new then new
     If ToolConfig_FrmMain.OptionButtonNewFlow.Value = True Then
-        createSheet ThisWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_FlowSourceSheeName), ToolConfig_FrmMain.m_strForRun_FlowTargetSheeName
+        createSheet ActiveWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_FlowSourceSheeName), ToolConfig_FrmMain.m_strForRun_FlowTargetSheeName
         'set target sheet
         l_iTagertFlowUsedRange = 4
         l_iTagertFlowIndexForAdd = 5
-        Set l_sheetTagertFlow = ThisWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_FlowTargetSheeName)
+        Set l_sheetTagertFlow = ActiveWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_FlowTargetSheeName)
     Else
-        Set l_sheetTagertFlow = ThisWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_FlowTargetSheeName)
+        Set l_sheetTagertFlow = ActiveWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_FlowTargetSheeName)
         l_iTagertFlowUsedRange = getMaxRow(l_sheetTagertFlow)
         l_iTagertFlowIndexForAdd = l_iTagertFlowUsedRange + 1
     End If
@@ -181,6 +190,10 @@ Private Sub replaceFlow(p_sheetTarget As Worksheet, p_iTRow As Long)
     l_strConvertedEND = l_sheetConfig.Cells(m_lConfigFunctionIndex, 4)
     l_strTestItemName = p_sheetTarget.Cells(p_iTRow, 8)
     l_strTestItemName = l_strConvertedHead + l_strTestItemName
+    
+    'Skip none FC test instance
+    If InStr(l_strTestItemName, "FC_") > 0 Then Exit Sub
+    
     If l_strConvertedEND <> "" Then
         l_strTestItemName = l_strTestItemName + l_strConvertedEND 'VBA.Mid(l_strTestItemName, 1, Len(l_strTestItemName) - l_strConvertedEND)
     End If
@@ -210,19 +223,19 @@ Private Sub InstancesAction()
     Dim l_sheetTagertInstances As Worksheet
     Dim l_iTagertInstancesUsedRange As Long
     Dim l_iTagertInstancesIndexForAdd As Long
-    Set l_sheetInstances = ThisWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_InstanceSourceSheeName)
+    Set l_sheetInstances = ActiveWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_InstanceSourceSheeName)
     
     Dim l_iStartNewIndex As Long
 
     'If new then new
     If ToolConfig_FrmMain.OptionButtonNewInstance.Value = True Then
-        createSheet ThisWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_InstanceSourceSheeName), ToolConfig_FrmMain.m_strForRun_InstanceTargetSheeName
+        createSheet ActiveWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_InstanceSourceSheeName), ToolConfig_FrmMain.m_strForRun_InstanceTargetSheeName
         'set target sheet
         l_iTagertInstancesUsedRange = 4
         l_iTagertInstancesIndexForAdd = 5
-        Set l_sheetTagertInstances = ThisWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_InstanceTargetSheeName)
+        Set l_sheetTagertInstances = ActiveWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_InstanceTargetSheeName)
     Else
-        Set l_sheetTagertInstances = ThisWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_InstanceTargetSheeName)
+        Set l_sheetTagertInstances = ActiveWorkbook.Worksheets(ToolConfig_FrmMain.m_strForRun_InstanceTargetSheeName)
         l_iTagertInstancesUsedRange = getMaxRow(l_sheetTagertInstances)
         l_iTagertInstancesIndexForAdd = l_iTagertInstancesUsedRange + 1
     End If
@@ -279,7 +292,11 @@ Private Sub replaceInstance(p_sheetTarget As Worksheet, p_iTRow As Long)
     l_strDC_Specs_Category = l_sheetConfig.Cells(m_lConfigFunctionIndex, 5)
     l_strTestItemName = p_sheetTarget.Cells(p_iTRow, 2)
     l_strTestItemName = l_strConvertedHead + l_strTestItemName
-    If l_strConvertedEND <> "" Then
+    
+    'Skip none FC test instance
+    If InStr(l_strTestItemName, "FC_") > 0 Then Exit Sub
+    
+    If l_strConvertedEND <> "" > 0 Then
         l_strTestItemName = l_strTestItemName + l_strConvertedEND 'VBA.Mid(l_strTestItemName, 1, Len(l_strTestItemName) - l_strConvertedEND)
     End If
     p_sheetTarget.Cells(p_iTRow, 2) = l_strTestItemName
@@ -303,7 +320,12 @@ Private Sub replaceInstance(p_sheetTarget As Worksheet, p_iTRow As Long)
             l_iblankCount = 0
         End If
         If l_sheetConfig.Cells(m_lConfigFunctionIndex, i) <> CON_STAR Then
+            'This is for AP Team Only
+            If i = 8 Then
+                p_sheetTarget.Cells(p_iTRow, i + 9 - 1) = p_sheetTarget.Cells(p_iTRow, i + 9)
+            End If
             p_sheetTarget.Cells(p_iTRow, i + 9) = l_sheetConfig.Cells(m_lConfigFunctionIndex, i)
+
         End If
     Next
 End Sub
@@ -420,7 +442,7 @@ Private Sub UserForm_Initialize()
     Dim l_strJobName As String
     
 '''    ThisWorkbook.Worksheets(getSheetNameByKey(CON_JOB, 1, 1)).Activate
-    Set l_sheetJob = ThisWorkbook.Worksheets(getSheetNameByKey(CON_JOB, 1, 1))
+    Set l_sheetJob = ActiveWorkbook.Worksheets(getSheetNameByKey(CON_JOB, 1, 1))
     m_lUsedRangeCount = getMaxRow(l_sheetJob)
     For i = 5 To m_lUsedRangeCount
         l_strJobName = l_sheetJob.Cells(i, 2)
