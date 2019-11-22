@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ToolConfig_FrmMain 
    Caption         =   "ToolSetup"
-   ClientHeight    =   9336
-   ClientLeft      =   48
-   ClientTop       =   372
-   ClientWidth     =   18432
+   ClientHeight    =   9330
+   ClientLeft      =   45
+   ClientTop       =   375
+   ClientWidth     =   18435
    OleObjectBlob   =   "ToolConfig_FrmMain.frx":0000
    StartUpPosition =   2  'CenterScreen
 End
@@ -13,6 +13,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
+
 
 
 Option Explicit
@@ -48,6 +50,10 @@ Private Sub SetupMyMultiColumn(p_ListBox As MSForms.ListBox)
         width = Len(l_strMaxString) * 6
         p_ListBox.ColumnWidths = width
     End If
+End Sub
+
+Private Sub ListBoxTestItemAll_Click()
+
 End Sub
 
 Private Sub UserForm_Initialize()
@@ -169,7 +175,7 @@ Private Sub cmdbtnItemSearch_Click()
     l_strSourceFlowSheetName = ListBoxFlowSource.List(0)
     m_strBeforeFlowName = l_strSourceFlowSheetName
     
-    Set l_sheetSourceFlow = ThisWorkbook.Sheets(l_strSourceFlowSheetName)
+    Set l_sheetSourceFlow = ActiveWorkbook.Sheets(l_strSourceFlowSheetName)
     m_lUsedRangeCount = getMaxRow(l_sheetSourceFlow)
     For i = 5 To m_lUsedRangeCount
         l_strItem = l_sheetSourceFlow.Cells(i, 8)
@@ -409,7 +415,7 @@ Private Sub MultimoveToRightAtAll(p_ListBoxL As MSForms.ListBox, _
                                 p_btnMoveToR2 As MSForms.CommandButton)
     Dim i As Long
     For i = 0 To p_ListBoxL.ListCount - 1
-        p_ListBoxR.AddItem p_ListBoxL.List(i), 0
+        p_ListBoxR.AddItem p_ListBoxL.List(i), i '0
         p_btnMoveToL1.Enabled = True
         p_btnMoveToR1.Enabled = False
         p_btnMoveToL2.Enabled = True
@@ -769,9 +775,9 @@ Private Function getSheetNameByKey(p_strKey As String, row As Integer, col As In
     Dim l_strListResult() As String
     l_iSheetCount = 0
     l_iCount = 0
-    For i = 1 To ThisWorkbook.Sheets.Count
-        If Len(ThisWorkbook.Sheets(i).Cells(row, col).Text) >= Len(p_strKey) Then
-            If p_strKey = VBA.Mid(VBA.Trim(ThisWorkbook.Sheets(i).Cells(row, col).Text), 1, Len(p_strKey)) Then
+    For i = 1 To ActiveWorkbook.Sheets.Count
+        If Len(ActiveWorkbook.Sheets(i).Cells(row, col).Text) >= Len(p_strKey) Then
+            If p_strKey = VBA.Mid(VBA.Trim(ActiveWorkbook.Sheets(i).Cells(row, col).Text), 1, Len(p_strKey)) Then
                 l_iSheetCount = l_iSheetCount + 1
             End If
         End If
@@ -779,10 +785,10 @@ Private Function getSheetNameByKey(p_strKey As String, row As Integer, col As In
     
     ReDim l_strListResult(l_iSheetCount)
     
-    For i = 1 To ThisWorkbook.Sheets.Count
-        If Len(ThisWorkbook.Sheets(i).Cells(row, col).Text) >= Len(p_strKey) Then
-            If p_strKey = VBA.Mid(VBA.Trim(ThisWorkbook.Sheets(i).Cells(row, col).Text), 1, Len(p_strKey)) Then
-                l_strListResult(l_iCount) = ThisWorkbook.Sheets(i).Name
+    For i = 1 To ActiveWorkbook.Sheets.Count
+        If Len(ActiveWorkbook.Sheets(i).Cells(row, col).Text) >= Len(p_strKey) Then
+            If p_strKey = VBA.Mid(VBA.Trim(ActiveWorkbook.Sheets(i).Cells(row, col).Text), 1, Len(p_strKey)) Then
+                l_strListResult(l_iCount) = ActiveWorkbook.Sheets(i).Name
                 l_iCount = l_iCount + 1
             End If
         End If
