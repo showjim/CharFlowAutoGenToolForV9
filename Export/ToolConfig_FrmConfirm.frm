@@ -17,6 +17,7 @@ Attribute VB_Exposed = False
 
 
 
+
 Option Explicit
 
 Private Const CON_STAR As String = "*"
@@ -192,7 +193,7 @@ Private Sub replaceFlow(p_sheetTarget As Worksheet, p_iTRow As Long)
     l_strTestItemName = l_strConvertedHead + l_strTestItemName
     
     'Skip none FC test instance
-    If InStr(l_strTestItemName, "FC_") > 0 Then Exit Sub
+    If InStr(l_strTestItemName, "FC_") = 0 Then Exit Sub
     
     If l_strConvertedEND <> "" Then
         l_strTestItemName = l_strTestItemName + l_strConvertedEND 'VBA.Mid(l_strTestItemName, 1, Len(l_strTestItemName) - l_strConvertedEND)
@@ -294,9 +295,9 @@ Private Sub replaceInstance(p_sheetTarget As Worksheet, p_iTRow As Long)
     l_strTestItemName = l_strConvertedHead + l_strTestItemName
     
     'Skip none FC test instance
-    If InStr(l_strTestItemName, "FC_") > 0 Then Exit Sub
+    If InStr(l_strTestItemName, "FC_") = 0 Then Exit Sub
     
-    If l_strConvertedEND <> "" > 0 Then
+    If l_strConvertedEND <> "" Then
         l_strTestItemName = l_strTestItemName + l_strConvertedEND 'VBA.Mid(l_strTestItemName, 1, Len(l_strTestItemName) - l_strConvertedEND)
     End If
     p_sheetTarget.Cells(p_iTRow, 2) = l_strTestItemName
