@@ -1,10 +1,10 @@
 VERSION 5.00
 Begin {C62A69F0-16DC-11CE-9E98-00AA00574A4F} ToolConfig_FrmConfirm 
    Caption         =   "Confirm"
-   ClientHeight    =   5748
-   ClientLeft      =   48
-   ClientTop       =   372
-   ClientWidth     =   4788
+   ClientHeight    =   5745
+   ClientLeft      =   45
+   ClientTop       =   375
+   ClientWidth     =   4785
    OleObjectBlob   =   "ToolConfig_FrmConfirm.frx":0000
    StartUpPosition =   1  'CenterOwner
 End
@@ -13,6 +13,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
+
 
 
 
@@ -34,9 +36,16 @@ Public FrmResult As String
 Private Sub RunAction()
     ConfigInfor_Initialize
     
+    'Make it faster
+    Application.Calculation = xlCalculationManual
+    Application.ScreenUpdating = False
+    ActiveSheet.DisplayPageBreaks = False
+    
     FlowAction
     InstancesAction
     JobAction
+    
+    Application.ScreenUpdating = True
     
     MsgBox "Processing is complete!", vbOKOnly, "Information"
     
@@ -182,6 +191,10 @@ Private Sub replaceFlow(p_sheetTarget As Worksheet, p_iTRow As Long)
     l_strConvertedEND = l_sheetConfig.Cells(m_lConfigFunctionIndex, 4)
     l_strTestItemName = p_sheetTarget.Cells(p_iTRow, 8)
     l_strTestItemName = l_strConvertedHead + l_strTestItemName
+    
+    'Skip none FC test instance
+    If InStr(l_strTestItemName, "FC_") = 0 Then Exit Sub
+    
     If l_strConvertedEND <> "" Then
         l_strTestItemName = l_strTestItemName + l_strConvertedEND 'VBA.Mid(l_strTestItemName, 1, Len(l_strTestItemName) - l_strConvertedEND)
     End If
@@ -280,6 +293,10 @@ Private Sub replaceInstance(p_sheetTarget As Worksheet, p_iTRow As Long)
     l_strDC_Specs_Category = l_sheetConfig.Cells(m_lConfigFunctionIndex, 5)
     l_strTestItemName = p_sheetTarget.Cells(p_iTRow, 2)
     l_strTestItemName = l_strConvertedHead + l_strTestItemName
+    
+    'Skip none FC test instance
+    If InStr(l_strTestItemName, "FC_") = 0 Then Exit Sub
+    
     If l_strConvertedEND <> "" Then
         l_strTestItemName = l_strTestItemName + l_strConvertedEND 'VBA.Mid(l_strTestItemName, 1, Len(l_strTestItemName) - l_strConvertedEND)
     End If
@@ -304,7 +321,12 @@ Private Sub replaceInstance(p_sheetTarget As Worksheet, p_iTRow As Long)
             l_iblankCount = 0
         End If
         If l_sheetConfig.Cells(m_lConfigFunctionIndex, i) <> CON_STAR Then
+            'This is for AP Team Only
+            If i = 8 Then
+                p_sheetTarget.Cells(p_iTRow, i + 9 - 1) = p_sheetTarget.Cells(p_iTRow, i + 9)
+            End If
             p_sheetTarget.Cells(p_iTRow, i + 9) = l_sheetConfig.Cells(m_lConfigFunctionIndex, i)
+
         End If
     Next
 End Sub
